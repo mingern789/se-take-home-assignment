@@ -21,8 +21,12 @@ const ordersArr = computed({
 
 // watch for changes to the pending orders
 watch(ordersArr.value, async () => {
-  if(bot.bots.length && ordersArr.value.length) {
-    bot.getToWork(orders.orders[0]);
+  if(bot.bots.length && ordersArr.value.length && bot.bots.filter(e => e.botStatus == 'AFK').length > 0) {
+    for(let i = 0;i<orders.orders.length;i++) {
+      if(orders.orders[i].status == 'waiting') {
+        bot.getToWork(orders.orders[i]);
+      }
+    }
   }
 })
 </script>

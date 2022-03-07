@@ -1,5 +1,5 @@
 import { defineStore, acceptHMRUpdate } from "pinia";
-import { useCompleteOrdersStore } from '../stores/complete-orders'
+import { useCompleteOrdersStore } from "../stores/complete-orders";
 
 export const usePendingOrdersStore = defineStore({
   id: "pending-orders",
@@ -15,7 +15,7 @@ export const usePendingOrdersStore = defineStore({
      * @param {string} name
      */
     addOrder() {
-      this.orders.push({name:`Regular ${this.regId}`,status:'waiting'});
+      this.orders.push({ name: `Regular ${this.regId}`, status: "waiting" });
       this.regId++;
     },
 
@@ -23,16 +23,35 @@ export const usePendingOrdersStore = defineStore({
      * Add a vip order
      */
     addVipOrder() {
-      if (!this.orders.length || !this.orders[0].name.includes("VIP")) {
-        this.orders.unshift({name:`VIP ${this.vipId}`,status:'waiting'});
+      if (this.orders.length && !this.orders[0].name.includes("VIP")) {
+        this.orders.unshift({ name: `VIP ${this.vipId}`, status: "waiting" });
         this.vipId++;
-      } else {
+      } 
+      else if(!this.orders.length) {
+        this.orders.push({
+          name: `VIP ${this.vipId}`,
+          status: "waiting",
+        });
+        this.vipId++;
+      }
+      else {
         for (let i = 0; i < this.orders.length; i++) {
           if (this.orders[i].name.includes("Regular")) {
-            this.orders.splice(i, 0, {name:`VIP ${this.vipId}`,status:'waiting'});
+            this.orders.splice(i, 0, {
+              name: `VIP ${this.vipId}`,
+              status: "waiting",
+            });
             this.vipId++;
             break;
-          }
+          } 
+          // else if (this.orders[i].name.includes("VIP")) {
+          //   this.orders.push({
+          //     name: `VIP ${this.vipId}`,
+          //     status: "waiting",
+          //   });
+          //   this.vipId++;
+          //   break;
+          // }
         }
         // alert('VIP exists')
       }
@@ -42,12 +61,14 @@ export const usePendingOrdersStore = defineStore({
     completeOrder(order) {
       const completeStore = useCompleteOrdersStore();
       completeStore.addOrder(order);
-      this.orders.splice(this.orders.findIndex(item => item.name === order), 1);
+      this.orders.splice(
+        this.orders.findIndex((item) => item.name === order),
+        1
+      );
 
-    //   this.orders = this.orders.filter(function( obj ) {
-    //     return obj.name != order;
-    // });
+      //   this.orders = this.orders.filter(function( obj ) {
+      //     return obj.name != order;
+      // });
     },
-
   },
 });

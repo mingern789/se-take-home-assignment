@@ -54,21 +54,31 @@ export const useBotStore = defineStore({
     async getToWork(order) {
       const orderStore = usePendingOrdersStore();
       let botId;
-      if (!this.bots[0].botStatus.includes("Preparing")) {
+      
+      
+      if (this.bots.filter(e => e.botStatus === 'AFK').length > 0) {
         for (let i of this.bots) {
+          console.log(i)
             if(i.botStatus == 'AFK') {
                 botId = i.id
             }
         }  
-        const timeout = setTimeout(this.markAsComplete, 5000, botId, order);
+        const timeout = setTimeout(this.markAsComplete, 10000, botId, order);
 
         // if (this.bots[0].progress != null) {
         //   setInterval(() => {
         //     this.bots[0].progress++;
         //   }, 1000);
-        // } 
+        // }
+        
+        for (let i of this.bots) {
+          if (i.id == botId) {
+            i.botStatus = `Preparing ${order.name}`;
+          }
+        }
 
-        this.bots[0].botStatus = `Preparing ${order.name}`;
+        // this.bots[0].botStatus = `Preparing ${order.name}`;
+
         // this.bots[0].orderObj = order;
         for (let i of orderStore.orders) {
           if (i.name == order.name) {
@@ -95,12 +105,6 @@ export const useBotStore = defineStore({
           this.getToWork(i);
         }
       }
-    },
-
-    async delay(duration) {
-        return new Promise((resolve) => {
-          setTimeout(resolve, duration);
-        });
     },
   },
 });
