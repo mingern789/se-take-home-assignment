@@ -23,7 +23,14 @@ export const useBotStore = defineStore({
      */
     removeBot() {
       if (this.bots.length > 0) {
+        const orderStore = usePendingOrdersStore();
         this.bots.pop();
+        for (let i of orderStore.orders) {
+          if(i.status == 'preparing' && this.bots.filter(e => e.id == i.assignedTo).length <= 0) {
+            i.status = 'waiting';
+            i.assignedTo = `abandoned by bot ${i.assignedTo}`
+          }
+        }
       }
     },
 
@@ -41,6 +48,7 @@ export const useBotStore = defineStore({
               return  
           }
       }
+      //order abandon related fix WIP, should return nothing here and change status elsewhere
       for (let obj of orderStore.orders) {
         if (obj.name == order.name) {
           obj.status = "waiting";
@@ -58,9 +66,9 @@ export const useBotStore = defineStore({
       
       if (this.bots.filter(e => e.botStatus === 'AFK').length > 0) {
         for (let i of this.bots) {
-          console.log(i)
             if(i.botStatus == 'AFK') {
-                botId = i.id
+                botId = i.id;
+                break;
             }
         }  
         const timeout = setTimeout(this.markAsComplete, 10000, botId, order);
@@ -83,6 +91,7 @@ export const useBotStore = defineStore({
         for (let i of orderStore.orders) {
           if (i.name == order.name) {
             i.status = "preparing";
+            i.assignedTo = botId;
           }
         }
         // await this.delay(5000);

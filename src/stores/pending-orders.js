@@ -34,7 +34,7 @@ export const usePendingOrdersStore = defineStore({
         });
         this.vipId++;
       }
-      else {
+      else if(this.orders.filter(e => e.name.includes("Regular")).length > 0){
         for (let i = 0; i < this.orders.length; i++) {
           if (this.orders[i].name.includes("Regular")) {
             this.orders.splice(i, 0, {
@@ -44,6 +44,7 @@ export const usePendingOrdersStore = defineStore({
             this.vipId++;
             break;
           } 
+          
           // else if (this.orders[i].name.includes("VIP")) {
           //   this.orders.push({
           //     name: `VIP ${this.vipId}`,
@@ -54,6 +55,13 @@ export const usePendingOrdersStore = defineStore({
           // }
         }
         // alert('VIP exists')
+      }
+      else {
+        this.orders.push({
+          name: `VIP ${this.vipId}`,
+          status: "waiting",
+        });
+        this.vipId++;
       }
     },
 
