@@ -5,14 +5,13 @@ export const usePendingOrdersStore = defineStore({
   id: "pending-orders",
   state: () => ({
     orders: [],
-    regId: 1,
-    vipId: 1,
+    regId: 1, //ID to keep track of regular orders
+    vipId: 1, //ID to keep track of vip orders
   }),
   getters: {},
   actions: {
     /**
      * Add a regular order
-     * @param {string} name
      */
     addOrder() {
       this.orders.push({ name: `Regular ${this.regId}`, status: "waiting" });
@@ -23,19 +22,26 @@ export const usePendingOrdersStore = defineStore({
      * Add a vip order
      */
     addVipOrder() {
+      //Situation 1: Moves vip orders to the front if there are only regular orders in the list.
       if (this.orders.length && !this.orders[0].name.includes("VIP")) {
         this.orders.unshift({ name: `VIP ${this.vipId}`, status: "waiting" });
         this.vipId++;
-      } 
-      else if(!this.orders.length) {
+      }
+      //Situation 2: Simply pushes the vip order if list is empty
+      else if (!this.orders.length) {
         this.orders.push({
           name: `VIP ${this.vipId}`,
           status: "waiting",
         });
         this.vipId++;
-      }
-      else if(this.orders.filter(e => e.name.includes("Regular")).length > 0){
+      } else if (
+      /** Situation 3: Vip and regular orders already exist in the list, so new vip orders
+       * should be then added in front of regular orders but behind existing vip orders.
+       **/
+        this.orders.filter((e) => e.name.includes("Regular")).length > 0
+      ) {
         for (let i = 0; i < this.orders.length; i++) {
+          //Searches for the first regular order then places the vip order in front of them.
           if (this.orders[i].name.includes("Regular")) {
             this.orders.splice(i, 0, {
               name: `VIP ${this.vipId}`,
@@ -43,19 +49,10 @@ export const usePendingOrdersStore = defineStore({
             });
             this.vipId++;
             break;
-          } 
-          
-          // else if (this.orders[i].name.includes("VIP")) {
-          //   this.orders.push({
-          //     name: `VIP ${this.vipId}`,
-          //     status: "waiting",
-          //   });
-          //   this.vipId++;
-          //   break;
-          // }
+          }
         }
-        // alert('VIP exists')
       }
+      //Simply pushes to the list if only vip orders exist.
       else {
         this.orders.push({
           name: `VIP ${this.vipId}`,
@@ -65,7 +62,7 @@ export const usePendingOrdersStore = defineStore({
       }
     },
 
-    //move order to completed
+    //move order to from pending to completed.
     completeOrder(order) {
       const completeStore = useCompleteOrdersStore();
       completeStore.addOrder(order);
@@ -73,10 +70,6 @@ export const usePendingOrdersStore = defineStore({
         this.orders.findIndex((item) => item.name === order),
         1
       );
-
-      //   this.orders = this.orders.filter(function( obj ) {
-      //     return obj.name != order;
-      // });
     },
   },
 });

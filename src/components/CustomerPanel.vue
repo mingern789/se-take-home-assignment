@@ -1,38 +1,22 @@
 <script setup>
-import { ref } from 'vue'
-import { usePendingOrdersStore } from '../stores/pending-orders'
+import { usePendingOrdersStore } from "../stores/pending-orders";
 
+const orders = usePendingOrdersStore();
 
-defineProps({
-  msg: String
-})
-
-const orders = usePendingOrdersStore()
-const count = ref(0)
-
+//calls the addOrder function from the pending orders store
 function addOrder() {
-    orders.addOrder();
+  orders.addOrder();
 }
 
+//calls the addVipOrder function from the pending orders store
 function addVipOrder() {
-    orders.addVipOrder();
+  orders.addVipOrder();
 }
 </script>
 
 <template>
-  <h1>{{ msg }}</h1>
-<button @click="addOrder">New Normal Order</button>
-<button @click="addVipOrder">New VIP Order</button>
-
-  <!-- <button type="button" @click="count++">count is: {{ count }}</button>
-  <p>
-    Edit
-    <code>components/HelloWorld.vue</code> to test hot module replacement.
-  </p> -->
+  <h1>Order here</h1>
+  <button @click="addOrder">New Normal Order</button>
+  <button @click="addVipOrder">New VIP Order</button>
 </template>
 
-<style scoped>
-a {
-  color: #42b983;
-}
-</style>
