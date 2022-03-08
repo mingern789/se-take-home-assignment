@@ -49,11 +49,13 @@ export const useBotStore = defineStore({
           }
       }
       //order abandon related fix WIP, should return nothing here and change status elsewhere
-      for (let obj of orderStore.orders) {
-        if (obj.name == order.name) {
-          obj.status = "waiting";
-        }
-      }
+      return
+      // for (let obj of orderStore.orders) {
+      //   if (obj.name == order.name) {
+      //     obj.status = "waiting";
+      //   }
+      // }
+
     //   this.bots[index] = { botStatus: "AFK"};
       
     },
